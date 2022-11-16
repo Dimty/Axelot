@@ -78,7 +78,7 @@ namespace Task_2
             public IEnumerable<IMessage> FailedMessages;
 
             /// <summary>
-            /// Синхронизирует запись сообщений в список <see cref="FailedMessages"/>.
+            /// Используется для синхронизации записи сообщений в список <see cref="FailedMessages"/>.
             /// </summary>
             private object _locker = new object();
 
