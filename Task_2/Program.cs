@@ -149,7 +149,7 @@ namespace Task_2
             /// <returns>Обновленный "список" неотправленных сообщений.</returns>
             private IEnumerable<IMessage> UpdateFailedMessages(IMessage message)
             {
-                if (!FailedMessages.Contains(message))
+                if (FailedMessages.Contains(message) is false)
                     return FailedMessages.Concat(new[] {message});
                 return FailedMessages;
             }
