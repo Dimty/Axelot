@@ -96,7 +96,7 @@ namespace Task_2
             /// <param name="messages"> коллекция сообщений </param>
             public void Send(IEnumerable<IMessage> messages)
             {
-                if (_userRepository is null | FailedMessages is null)
+                if (_userRepository is null || FailedMessages is null)
                 {
                     Console.WriteLine(
                         $"Instance userRepository or FailedMessages is null"); //Пусть консоль заменяет какой-нибудь логгер.
@@ -118,19 +118,12 @@ namespace Task_2
             /// Параметр является экземпляром класса, реализующего интерфейс <see cref="IMessage"/>.</param>
             private void SingleMessageSend(IMessage message)
             {
+                var sendResult = false;
                 try
                 {
                     var user = _userRepository.Get(message.UserId);
-                    var sendResult = SenderDetermination(user.DeliveryMethod)
+                    sendResult = SenderDetermination(user.DeliveryMethod)
                         .Send(message.MessageText, user.Address);
-
-                    if (sendResult is false)
-                    {
-                        lock (_locker)
-                        {
-                            FailedMessages = UpdateFailedMessages(message);
-                        }
-                    }
                 }
                 catch (Exception e)
                 {
@@ -138,9 +131,12 @@ namespace Task_2
                 }
                 finally
                 {
-                    lock (_locker)
+                    if (sendResult is false)
                     {
-                        FailedMessages = UpdateFailedMessages(message);
+                        lock (_locker)
+                        {
+                            FailedMessages = UpdateFailedMessages(message);
+                        }
                     }
                 }
             }
@@ -174,7 +170,7 @@ namespace Task_2
             };
 
             /// <summary>
-            /// Класс-заглушка. Не отправляет сообщение и не записывает его в список <see cref="Postman.FailedMessages"/>.
+            /// Класс-заглушка. Сообщение не отправляется и не записывается в список <see cref="Postman.FailedMessages"/>.
             /// </summary>
             private class
                 TrueSender : ISender //Классы TrueSender и FalseSender были написаны для избежания возвращения null в методе SenderDetermination
@@ -186,7 +182,7 @@ namespace Task_2
             }
 
             /// <summary>
-            /// Класс-заглушка. Не отправляет сообщение и записывает его в список <see cref="Postman.FailedMessages"/>.
+            /// Класс-заглушка. Сообщение не отправляется, но записывается в список <see cref="Postman.FailedMessages"/>.
             /// </summary>
             private class FalseSender : ISender
             {
