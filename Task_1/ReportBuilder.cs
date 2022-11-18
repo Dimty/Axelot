@@ -72,7 +72,10 @@ namespace Task_1
         {
             lock (objSync)
             {
-                _listRepBuilder[id]?._cts.Cancel();
+                foreach (var item in _listRepBuilder)
+                {
+                    if(item.id == id) item._cts.Cancel();
+                }
             }
         }
 
@@ -125,7 +128,7 @@ namespace Task_1
             {
                 if (_cts.Token.IsCancellationRequested)
                 {
-                    Console.WriteLine("Task " + id + " was cancelled");
+                    Console.WriteLine("Task " + id + " was cancelled.");
                     return;
                 }
 
