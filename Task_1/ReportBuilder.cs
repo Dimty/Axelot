@@ -39,7 +39,7 @@ namespace Task_1
         public ReportBuilder(IReporter reporter)
         {
             _reporter = reporter;
-
+            //TODO: убрать лок из конструктора.
             lock (objSync)
             {
                 _listRepBuilder.Add(this);
@@ -87,6 +87,7 @@ namespace Task_1
         //TODO: переделать метод "GenerateReport".
         private Task GenerateReport(int id)
         {
+            //TODO: сохранять задачи, не выполнившиеся до закрытия приложения.
             Task t = new Task(() =>
             {
                 try
